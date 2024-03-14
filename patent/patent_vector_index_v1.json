@@ -1,0 +1,163 @@
+PUT /patent_vector_index_v1
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "my_ngram_f": {
+          "type": "ngram",
+          "min_gram": "3",
+          "max_gram": "4"
+        }
+      },
+      "analyzer": {
+        "my_ngram_tokenizer": {
+          "tokenizer": "my_ngram_tokenizer"
+        },
+        "edge_ngram_tokenizer": {
+          "tokenizer": "edge_ngram_tokenizer"
+        },
+        "nori_analyzer": {
+          "filter": [
+            "nori_readingform",
+            "lowercase",
+            "trim"
+          ],
+          "type": "custom",
+          "tokenizer": "korean_nori_tokenizer_userdict"
+        }
+      },
+      "tokenizer": {
+        "korean_nori_tokenizer_userdict": {
+          "type": "nori_tokenizer",
+          "decompound_mode": "mixed"
+        },
+        "my_ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": "1",
+          "max_gram": "2"
+        },
+        "edge_ngram_tokenizer": {
+          "type": "edge_ngram",
+          "min_gram": "1",
+          "max_gram": "10"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "_all": {
+        "type": "object",
+        "enabled": false
+      },
+      "id": {
+        "type": "keyword"
+      },
+      "embedding": {
+        "type": "dense_vector",
+        "dims": 1024,
+        "index": true,
+        "similarity": "cosine"
+      },
+      "text": {
+        "type": "text"
+      }
+      "metadata": {
+        "properties": {
+          "db_id": {
+            "type": "keyword"
+          },
+          "applicate_number": {
+            "type": "keyword"
+          },
+          "applicate_date": {
+            "type": "date",
+            "format": "yyyy-MM-dd"
+          },
+          "register_number": {
+            "type": "keyword"
+          },
+          "register_date": {
+            "type": "date",
+            "format": "yyyy-MM-dd"
+          },
+          "open_number": {
+            "type": "keyword"
+          },
+          "open_date": {
+            "type": "date",
+            "format": "yyyy-MM-dd"
+          },
+          "year": {
+            "type": "long"
+          },
+          "ipcs": {
+            "type": "keyword"
+          },
+          "lrh_name": {
+            "type": "text"
+          },
+          "lrh_eng_name": {
+            "type": "text"
+          },
+          "lrh_corp_num": {
+            "type": "keyword"
+          },
+          "lrh_biz_num": {
+            "type": "keyword"
+          },
+          "reg_status": {
+            "type": "keyword"
+          },
+          "applicate_nation": {
+            "type": "keyword"
+          },
+          "invention_title": {
+            "type": "text",
+            "fields": {
+              "ngram": {
+                "type": "text",
+                "analyzer": "my_ngram_tokenizer"
+              },
+              "nori": {
+                "type": "text",
+                "analyzer": "nori_analyzer"
+              }
+            }
+          },
+          "invention_eng_title": {
+            "type": "text",
+            "fields": {
+              "english": {
+                "type": "text",
+                "analyzer": "english"
+              }
+            }
+          },
+          "abstract": {
+            "type": "text",
+            "fields": {
+              "ngram": {
+                "type": "text",
+                "analyzer": "my_ngram_tokenizer"
+              },
+              "nori": {
+                "type": "text",
+                "analyzer": "nori_analyzer"
+              }
+            }
+          },
+          "claim_text": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
